@@ -1,259 +1,94 @@
-# Pengembangan Fitur AI pada Web Daily Journal — Generate Images (SDXL)
+# Web Daily Journal dengan Fitur AI Image Generator
 
-> Fitur ini menambahkan kemampuan **generate gambar ilustrasi** dari **Judul Artikel** menggunakan AI (Stable Diffusion XL via Hugging Face), lengkap dengan **penerjemahan judul (EN)** dan **prompt engineering**.
+Proyek ini adalah pengembangan dari aplikasi Web Daily Journal yang mengintegrasikan kecerdasan buatan (Artificial Intelligence) untuk memenuhi tugas **Ujian Akhir Semester (UAS)**.
 
----
+Fitur utama yang ditambahkan adalah **Auto Generate Gambar untuk Artikel** (Opsi 5), yang memungkinkan admin membuat ilustrasi artikel secara otomatis menggunakan Generative AI.
 
-## Daftar Isi
-- [Ringkasan](#ringkasan)
-- [Tujuan](#tujuan)
-- [Arsitektur Singkat](#arsitektur-singkat)
-- [Teknologi / Library](#teknologi--library)
-- [Struktur Modul & File](#struktur-modul--file)
-- [Prompt Engineering](#prompt-engineering)
-- [User Guide (Panduan Penggunaan)](#user-guide-panduan-penggunaan)
-- [Setup & Konfigurasi](#setup--konfigurasi)
-- [Error Handling & Catatan Keamanan](#error-handling--catatan-keamanan)
-- [Checklist Presentasi](#checklist-presentasi)
-- [Catatan](#catatan)
+## 👥 Anggota Kelompok
+*Silakan isi dengan nama anggota kelompok Anda:*
+1. **[Nama Mahasiswa 1]** - [NIM]
+2. **[Nama Mahasiswa 2]** - [NIM]
+3. **[Nama Mahasiswa 3]** - [NIM]
+4. **[Nama Mahasiswa 4]** - [NIM]
 
----
+## 🤖 Fitur AI: Auto Generate Image
+Sesuai dengan deskripsi Opsi 5 pada dokumen panduan, fitur ini berfungsi untuk menghasilkan gambar ilustrasi otomatis berdasarkan **Judul Artikel**.
 
-## Ringkasan
-Pada menu **Article**, admin biasanya membutuhkan gambar ilustrasi/thumbnail yang relevan. Namun sering terkendala:
-- tidak punya stok gambar,
-- tidak sempat mencari gambar manual,
-- gambar yang ditemukan tidak konsisten gaya/tema.
+### Keunggulan Fitur:
+* **Integrasi Text-to-Image:** Menggunakan model **Stable Diffusion XL Base 1.0** via Hugging Face Inference API.
+* **Prompt Engineering Otomatis:** Sistem secara otomatis menerjemahkan judul artikel ke bahasa Inggris dan memperkaya prompt dengan parameter kualitas tinggi (e.g., *Ultra-realistic, Cinematic lighting, 8k render*) agar hasil gambar lebih estetis.
+* **Efisiensi:** Membantu penulis yang kesulitan mencari gambar ilustrasi yang relevan.
 
-Solusi: tombol **Generate Images** yang akan menghasilkan ilustrasi otomatis dari **judul artikel** dan menyimpan hasilnya ke folder `img/`.
+## 🛠️ Teknologi yang Digunakan
+* **Backend:** PHP Native (7.4 / 8.x)
+* **Frontend:** Bootstrap 5, jQuery (AJAX)
+* **Database:** MySQL
+* **AI Service:** Hugging Face Inference API (Model: `stabilityai/stable-diffusion-xl-base-1.0`)
+* **Translation:** Google Translate API (Unofficial/Free endpoint) untuk preprocessing prompt.
 
----
+## ⚙️ Cara Instalasi & Konfigurasi
 
-## Tujuan
-1. Mempermudah admin membuat artikel tanpa harus mencari asset gambar manual.
-2. Mempercepat workflow penulisan artikel/jurnal.
-3. Menunjukkan integrasi AI yang nyata: **API call**, **prompt engineering**, **handling output**, dan **penyimpanan file**.
+1.  **Clone Repository**
+    ```bash
+    git clone [https://github.com/username/dailyjournal-ai.git](https://github.com/username/dailyjournal-ai.git)
+    ```
 
----
+2.  **Setup Database**
+    * Buat database baru di phpMyAdmin (misal: `dailyjournal` atau `latihan_pbw`).
+    * Import file database yang disertakan (jika ada file `.sql`, sertakan di sini).
+    * Sesuaikan konfigurasi di `koneksi.php`:
+        ```php
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "nama_database_kamu";
+        ```
 
-## Arsitektur Singkat
-Fitur ini memakai alur request–response berbasis **AJAX**:
+3.  **Konfigurasi Environment Variable (.env)**
+    * Duplikat file `.env.example` (jika ada) atau buat file baru bernama `.env` di root folder.
+    * Dapatkan **Access Token** (Write permission) dari [Hugging Face Settings](https://huggingface.co/settings/tokens).
+    * Isi file `.env`:
+        ```env
+        HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        ```
 
-**Flow data:**
-1. Admin mengisi **Judul Artikel**
-2. Klik **Generate Images**
-3. Browser kirim **AJAX** ke `ajax_ai.php`
-4. `ajax_ai.php` memanggil `ai_image.php`
-5. `ai_image.php` melakukan:
-   - Translate judul → **Google Translate API** (EN)
-   - Susun **Enhanced Prompt**
-   - Generate gambar → **Hugging Face Inference API** (model `stabilityai/stable-diffusion-xl-base-1.0`)
-6. API mengembalikan hasil gambar (base64/binary)
-7. Server menyimpan file gambar ke folder `img/`
-8. Server mengembalikan URL gambar → browser menampilkan preview
-9. Admin klik **Simpan**
+4.  **Izin Folder**
+    Pastikan folder `img/` memiliki izin tulis (*write permission*) agar script PHP dapat menyimpan gambar hasil generate AI.
 
-**Diagram ringkas:**
-```text
-[Admin Input Judul]
-        |
-        v
-   (AJAX Request)
-        |
-        v
-     ajax_ai.php
-        |
-        v
-     ai_image.php
-   /             \
-  v               v
-Translate API   HuggingFace Inference API (SDXL)
-  |               |
-  v               v
-English Title   Base64/Image Result
-        \        /
-         v      v
-      Save to /img/
-         |
-         v
-  Return URL + Preview
-```
+## 📖 Panduan Penggunaan (User Guide)
 
----
+1.  **Login Admin:** Masuk ke halaman `login.php` menggunakan akun admin.
+2.  **Buka Halaman Artikel:** Navigasi ke menu **Article**.
+3.  **Tambah Artikel:** Klik tombol **"Tambah Article"**.
+4.  **Isi Judul:** Masukkan judul artikel yang ingin ditulis (Minimal 3 karakter). Judul ini akan menjadi dasar (prompt) bagi AI untuk menggambar.
+5.  **Generate Gambar:**
+    * Klik tombol **"Generate Images"** (ikon bintang/magic).
+    * Tunggu proses *loading* (biasanya 10-20 detik tergantung server Hugging Face).
+    * *Preview* gambar akan muncul otomatis setelah selesai.
+6.  **Simpan:** Lengkapi isi artikel dan klik **Simpan**. Gambar otomatis tersimpan di server dan database.
 
-## Teknologi / Library
-### Backend
-- **PHP** (endpoint + logic pipeline AI)
-- **cURL** (HTTP request ke API eksternal)
+## 🧠 Dokumentasi Teknis (Arsitektur & Alur)
 
-### Frontend
-- **Bootstrap** (UI form + tombol + komponen preview + loading)
-- **AJAX (JavaScript)** (request tanpa reload halaman)
+Proses generasi gambar berjalan dengan alur sebagai berikut:
 
-### AI / Model
-- **Hugging Face Inference API**
-- Model: `stabilityai/stable-diffusion-xl-base-1.0` (SDXL)
+1.  **Client-Side (article.php):**
+    * User menginput judul.
+    * AJAX request dikirim ke `ajax_ai.php` membawa parameter `judul`.
+
+2.  **Server-Side Logic (ajax_ai.php & ai_image.php):**
+    * **Translation:** Judul bahasa Indonesia diterjemahkan ke Inggris menggunakan fungsi `translateToEnglish()` agar lebih dipahami oleh model AI.
+    * **Prompt Enhancement:** Prompt judul digabungkan dengan *magic words* (modifier) seperti *"Ultra-realistic Unreal Engine 5 cinematic render..."* untuk memastikan kualitas output tinggi.
+    * **API Call:** Script mengirim POST request ke Hugging Face API dengan *header* Authorization Bearer token.
+    * **Response Handling:** API mengembalikan binary image, yang kemudian di-encode ke Base64 dan dikirim kembali ke browser untuk preview.
+
+3.  **Saving:**
+    * Saat tombol simpan ditekan, Base64 image di-decode kembali menjadi file `.jpg/.jpeg` dan disimpan ke folder `img/` dengan nama unik.
+
+## ⚠️ Disclaimer & Etika AI
+Fitur ini menggunakan model Generative AI pihak ketiga.
+* Gambar yang dihasilkan bersifat ilustratif dan mungkin tidak 100% akurat secara fakta.
+* Harap gunakan fitur ini dengan bijak dan tidak menggunakannya untuk membuat konten yang melanggar hukum, berbau SARA, atau pornografi.
+* Hak cipta gambar mengikuti ketentuan lisensi dari model Stability AI.
 
 ---
-
-## Struktur Modul & File
-### `ajax_ai.php` — Endpoint/Controller
-Tugas utama:
-- menerima request dari frontend (judul artikel)
-- validasi input
-- memanggil `ai_image.php`
-- mengembalikan response JSON ke frontend
-
-Contoh format response yang disarankan:
-```json
-{
-  "status": "success",
-  "image_url": "img/ai_1700000000.png",
-  "prompt_used": "..."
-}
-```
-
-### `ai_image.php` — AI Pipeline
-Tugas utama:
-- `translateToEnglish($title)` → judul ke bahasa Inggris
-- `buildEnhancedPrompt($englishTitle)` → susun prompt berkualitas tinggi
-- request ke HF Inference API
-- simpan output ke `img/`
-- return URL/path gambar
-
----
-
-## Prompt Engineering
-### Kenapa Enhanced Prompt?
-Sistem **tidak mengirim judul mentah** ke model. Judul terlebih dahulu:
-1. diterjemahkan ke bahasa Inggris (umumnya lebih optimal untuk model SDXL),
-2. diperkaya dengan parameter kualitas (render, lighting, kamera, detail).
-
-Hasilnya:
-- output lebih konsisten,
-- lebih realistis,
-- lebih “layak thumbnail artikel”.
-
-### Pola Enhanced Prompt (Contoh)
-- **Subject**: hasil translate judul
-- **Quality Enhancer**: “Ultra-realistic Unreal Engine 5 cinematic render...”
-- **Detail Render**: PBR, micro-details, ray tracing, GI, AO
-- **Camera**: 35mm lens, f/2.8, DOF
-- **Constraint**: “no cartoon/anime, no artifacts, clean”
-
-Contoh gaya prompt (ringkas):
-```text
-Ultra-realistic Unreal Engine 5 cinematic render of {englishTitle}.
-PBR materials, ray-traced reflections, volumetric lighting, shallow depth of field,
-8k, sharp focus, professional color grading, clean, no artifacts, no cartoon, no anime.
-```
-
----
-
-## User Guide (Panduan Penggunaan)
-> Tambahkan screenshot di bagian yang ditandai `TODO: Screenshot`.
-
-### 1) Login sebagai Admin
-1. Buka halaman login
-2. Masukkan username & password admin
-3. Klik **Login**
-
-✅ TODO: Screenshot 1 — Halaman Login
-
-### 2) Buka Menu Article
-1. Dari dashboard, pilih menu **Article**
-2. Klik tombol **Tambah Article**
-
-✅ TODO: Screenshot 2 — Menu Article & tombol Tambah
-
-### 3) Isi Judul Artikel
-1. Isi field **Judul Artikel**
-2. (Opsional) isi isi artikel/konten
-
-✅ TODO: Screenshot 3 — Form Tambah Article (judul terisi)
-
-### 4) Generate Images
-1. Klik tombol **Generate Images**
-2. Sistem menampilkan **loading** karena memanggil API:
-   - Translate API
-   - Hugging Face Inference API
-3. Tunggu sampai preview gambar muncul
-
-✅ TODO: Screenshot 4 — Loading state  
-✅ TODO: Screenshot 5 — Preview hasil generate
-
-### 5) Simpan
-1. Jika gambar sudah sesuai, klik **Simpan**
-2. Sistem menyimpan gambar ke folder `img/` dan mengaitkan ke artikel
-
-✅ TODO: Screenshot 6 — Artikel tersimpan + thumbnail tampil
-
----
-
-## Setup & Konfigurasi
-### Prasyarat
-- PHP (disarankan 7.4+ / 8.x)
-- Akses internet (karena butuh API eksternal)
-- (Opsional) Web server: Apache/Nginx/Laragon/XAMPP
-
-### Konfigurasi API Key (Disarankan via ENV / Config)
-**Jangan hardcode API key di repo publik.**  
-Simpan pada `.env` atau file config yang tidak ikut di-commit.
-
-Contoh variabel:
-- `GOOGLE_TRANSLATE_API_KEY=...`
-- `HUGGINGFACE_API_TOKEN=...`
-
-> Jika belum pakai `.env`, minimal simpan di `config.php` lalu exclude dari git.
-
----
-
-## Error Handling & Catatan Keamanan
-### Validasi Input
-- Judul tidak boleh kosong
-- batas panjang judul (contoh: 5–120 char) untuk mencegah prompt terlalu panjang
-
-### Timeout & Retry
-- Set `CURLOPT_TIMEOUT` agar request tidak menggantung
-- (Opsional) retry 1x jika error transient
-
-### Fallback
-- Jika translate gagal → gunakan judul asli
-- Jika generate gagal → tampilkan pesan error yang jelas ke user
-
-### Keamanan
-- API key **wajib** disimpan aman (ENV/config, bukan hardcode)
-- Batasi frekuensi generate (rate limit sederhana) untuk menghindari abuse
-- Pastikan nama file output aman (hindari path traversal)
-
----
-
-## Checklist Presentasi
-### Konsep
-- Masalah: admin butuh gambar untuk artikel, tapi tidak punya asset/skill desain
-- Solusi: generate gambar otomatis dari judul, langsung bisa jadi thumbnail
-
-### Demo
-- Pastikan koneksi stabil
-- Siapkan 2–3 judul cadangan untuk demo:
-  - “Refleksi Kedisiplinan di Semester Baru”
-  - “Malam Hujan dan Overthinking”
-  - “Belajar Konsisten: 30 Hari Menulis”
-
-### Penjelasan Kode (yang sering ditanya dosen)
-- `translateToEnglish()`:
-  - alasan: SDXL cenderung lebih akurat dengan prompt berbahasa Inggris
-- `buildEnhancedPrompt()`:
-  - alasan: nilai tambah prompt engineering (bukan judul mentah)
-- saving output:
-  - base64/binary → file di `img/` → return URL → preview
-
----
-
-## Catatan
-Jika ingin meningkatkan kualitas penilaian, kamu bisa menambahkan:
-- log request (tanpa menyimpan token) untuk debugging,
-- pilihan gaya (realistic / watercolor / minimalist),
-- tombol “regenerate” untuk variasi gambar.
-
----
+**Dibuat untuk memenuhi tugas UAS Mata Kuliah Pemrograman Berbasis Web.**
