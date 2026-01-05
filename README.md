@@ -5,11 +5,12 @@ Proyek ini adalah pengembangan dari aplikasi Web Daily Journal yang mengintegras
 Fitur utama yang ditambahkan adalah **Auto Generate Gambar untuk Artikel** (Opsi 5), yang memungkinkan admin membuat ilustrasi artikel secara otomatis menggunakan Generative AI.
 
 ## 👥 Anggota Kelompok
-*Silakan isi dengan nama anggota kelompok Anda:*
-1. **[Nama Mahasiswa 1]** - [NIM]
-2. **[Nama Mahasiswa 2]** - [NIM]
-3. **[Nama Mahasiswa 3]** - [NIM]
-4. **[Nama Mahasiswa 4]** - [NIM]
+| Nama                           | NIM            |
+| ------------------------------ | -------------- |
+| **Adam Raga**                  | A11.2024.15598 |
+| **Affan Shahzada**             | A11.2024.15784 |
+| **Aiska Zahra Nailani**        | A11.2024.16014 |
+| **Nur Alif Maulana Syafrudin** | A11.2024.15936 |
 
 ## 🤖 Fitur AI: Auto Generate Image
 Sesuai dengan deskripsi Opsi 5 pada dokumen panduan, fitur ini berfungsi untuk menghasilkan gambar ilustrasi otomatis berdasarkan **Judul Artikel**.
