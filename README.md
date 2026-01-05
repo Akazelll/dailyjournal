@@ -31,7 +31,7 @@ Sesuai dengan deskripsi Opsi 5 pada dokumen panduan, fitur ini berfungsi untuk m
 
 1.  **Clone Repository**
     ```bash
-    git clone [https://github.com/Akazelll/dailyjourna](https://github.com/Akazelll/dailyjourna)
+    git clone https://github.com/Akazelll/dailyjournal
     ```
 
 2.  **Setup Database**
