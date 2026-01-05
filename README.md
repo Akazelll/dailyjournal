@@ -7,9 +7,9 @@ Fitur utama yang ditambahkan adalah **Auto Generate Gambar untuk Artikel** (Opsi
 ## 👥 Anggota Kelompok
 | Nama                           | NIM            |
 | ------------------------------ | -------------- |
-| **Adam Raga**                  | A11.2024.15598 |
-| **Affan Shahzada**             | A11.2024.15784 |
-| **Aiska Zahra Nailani**        | A11.2024.16014 |
+| **Adam Raga** | A11.2024.15598 |
+| **Affan Shahzada** | A11.2024.15784 |
+| **Aiska Zahra Nailani** | A11.2024.16014 |
 | **Nur Alif Maulana Syafrudin** | A11.2024.15936 |
 
 ## 🤖 Fitur AI: Auto Generate Image
