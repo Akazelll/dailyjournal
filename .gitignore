@@ -1,0 +1,21 @@
+# File Environment (Sangat Penting: Berisi Password/Token)
+.env
+.env.local
+.env.backup
+
+# Folder Vendor (Jika nanti pakai composer)
+/vendor/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDE / Text Editor settings
+.vscode/
+.idea/
+
+# (Opsional) Jika Anda tidak ingin mengupload gambar hasil upload user ke Git
+# img/
+# !img/favicon.ico
+# !img/profile.jpg
+# !img/hero.jpg
