@@ -1,30 +1,10 @@
 <?php
-function loadEnv($path)
-{
-    if (!file_exists($path)) {
-        return;
-    }
-
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) {
-            continue;
-        }
-
-        if (strpos($line, '=') !== false) {
-            list($name, $value) = explode('=', $line, 2);
-            $name = trim($name);
-            $value = trim($value);
-
-            putenv(sprintf('%s=%s', $name, $value));
-            $_ENV[$name] = $value;
-        }
-    }
-}
-loadEnv(__DIR__ . '/.env');
+include_once "koneksi.php";
 
 function translateToEnglish($text)
 {
+    $text = substr($text, 0, 1000);
+
     $url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=" . urlencode($text);
 
     $ch = curl_init();
@@ -43,25 +23,36 @@ function translateToEnglish($text)
     return $text;
 }
 
-function generateImageAI($prompt)
+function generateImageAI($prompt, $targetFormat = 'jpg')
 {
+    // 1. Definisi Format yang Diizinkan (Sesuai request dosen)
+    // Format array: 'ekstensi_user' => 'mime_type_output'
+    $allowedFormats = [
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'gif'  => 'image/gif'
+    ];
+
+    // 2. Validasi Format (Syarat Dosen)
+    // Jika format user tidak ada di kunci array $allowedFormats
+    if (!array_key_exists(strtolower($targetFormat), $allowedFormats)) {
+        return json_encode([
+            "success" => false,
+            "error" => "Format gambar tidak didukung. Gunakan JPG, PNG, atau GIF."
+        ]);
+    }
+
+    $targetMime = $allowedFormats[strtolower($targetFormat)];
+
+    // 3. Request ke AI (Stable Diffusion XL)
+    // Kita tetap minta Stable Diffusion generate gambar (biasanya dia kasih JPEG)
     $hfToken = getenv('HF_TOKEN');
-
     $modelId = 'stabilityai/stable-diffusion-xl-base-1.0';
-
     $apiURL = "https://router.huggingface.co/hf-inference/models/$modelId";
 
     $englishPrompt = translateToEnglish($prompt);
-
-    $enhancedPrompt = "Ultra-realistic Unreal Engine 5 cinematic render of {$englishPrompt}. 
-    AAA game cinematic quality, photoreal PBR shading with correct roughness/metalness workflow, realistic subsurface scattering (skin/leaves), anisotropic highlights (hair/metal), micro-normal details, displacement-level surface depth. 
-    Ray-traced reflections and refractions, Lumen global illumination, accurate bounce light, soft penumbra shadows, contact shadows, ambient occlusion, physically correct exposure and white balance. 
-    Volumetric fog and god rays, subtle atmospheric perspective, realistic particles (fine dust / mist), natural depth cues, no flat lighting. 
-    Cinematic composition (rule of thirds), sharp subject separation, shallow depth of field, clean bokeh, no chromatic mess. 
-    Virtual production camera: full-frame sensor, 35mm prime lens, f/2.8, ISO 200, 1/120s, realistic perspective, correct scale, no stretching, no warped geometry. 
-    Filmic ACES tonemapping, gentle bloom, subtle lens distortion, light film grain, high dynamic range, professional color grading, true-to-life color accuracy. 
-    Ultra-detailed 8k render, clean edges, no aliasing, no artifacts, no text, no watermark, no cartoon/anime, no painterly style, no low-poly, no CGI toy look, no plastic materials, no over-sharpening, no oversmoothing.";
-
+    $enhancedPrompt = "Ultra-realistic Unreal Engine 5 cinematic render of {$englishPrompt}, 8k resolution, photorealistic.";
 
     $headers = [
         "Authorization: Bearer $hfToken",
@@ -75,32 +66,58 @@ function generateImageAI($prompt)
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
     $result = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
     curl_close($ch);
 
-    if ($httpCode == 200 && strpos($contentType, 'image') !== false) {
-        $base64Image = base64_encode($result);
+    if ($httpCode == 200) {
+        // 4. Proses Konversi Gambar (Magic happens here)
+
+        // Baca string gambar dari API (apapun format aslinya)
+        $image = imagecreatefromstring($result);
+
+        if (!$image) {
+            return json_encode(["success" => false, "error" => "Gagal memproses gambar dari AI."]);
+        }
+
+        // Mulai buffer untuk menangkap hasil konversi
+        ob_start();
+
+        // Konversi sesuai target format user
+        switch (strtolower($targetFormat)) {
+            case 'png':
+                imagepng($image); // Convert ke PNG
+                break;
+            case 'gif':
+                imagegif($image); // Convert ke GIF
+                break;
+            case 'jpg':
+            case 'jpeg':
+            default:
+                imagejpeg($image, 90); // Convert ke JPG (Quality 90)
+                break;
+        }
+
+        $imageData = ob_get_contents();
+        ob_end_clean();
+        imagedestroy($image);
+
+        // 5. Kirim Hasil
+        $base64Image = base64_encode($imageData);
         return json_encode([
             "success" => true,
-            "translated_prompt" => $englishPrompt,
-            "image_base64" => "data:$contentType;base64,$base64Image"
+            "format_request" => $targetFormat,
+            "image_base64" => "data:$targetMime;base64,$base64Image"
         ]);
     } else {
         $errorResp = json_decode($result, true);
-        $pesanError = $errorResp['error'] ?? "Gagal (HTTP $httpCode). Respon: " . substr($result, 0, 150);
-
+        $pesanError = $errorResp['error'] ?? "Gagal (HTTP $httpCode).";
         if (strpos($pesanError, 'loading') !== false) {
-            $pesanError = "Model sedang 'Warming Up' (Menyiapkan mesin). Tunggu 30 detik, lalu klik Generate lagi.";
+            $pesanError = "Model sedang 'Warming Up'. Tunggu 30 detik.";
         }
-
         return json_encode(["success" => false, "error" => $pesanError]);
     }
 }
