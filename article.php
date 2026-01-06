@@ -93,13 +93,11 @@
     $(document).ready(function() {
         load_data();
 
-        // Handler tombol AI (Generate Image)
         $('.btn-ai-action').click(function() {
             var actionType = $(this).data('action');
-            var isi = $('#isi').val(); // Mengambil prompt dari isi artikel
-            var format = $('#formatGambar').val(); // Mengambil format pilihan user
+            var isi = $('#isi').val();
+            var format = $('#formatGambar').val();
 
-            // Validasi input isi
             if (isi.length < 10) {
                 alert("Mohon isi konten artikel minimal 10 karakter untuk generate gambar!");
                 return;
@@ -108,35 +106,30 @@
             var btn = $(this);
             var originalText = btn.html();
 
-            // UI Loading
             btn.html('<span class="spinner-border spinner-border-sm"></span> Loading...');
             btn.prop('disabled', true);
             $('#placeholderIcon').hide();
             $('#aiImagePreviewContainer').append('<div id="loadingText" class="text-center text-muted small">Sedang melukis...</div>');
             $('#aiImagePreview').addClass('d-none');
 
-            // Request AJAX
             $.ajax({
                 url: "ajax_ai.php",
                 method: "POST",
                 dataType: "json",
                 data: {
                     action: actionType,
-                    isi: isi, // Kirim prompt
-                    format: format // Kirim format (jpg/png/gif)
+                    isi: isi,
+                    format: format 
                 },
                 success: function(response) {
                     $('#loadingText').remove();
 
                     if (actionType === 'generate_image') {
                         if (response.success) {
-                            // Tampilkan hasil gambar
                             $('#aiImagePreview').attr('src', response.image_base64).removeClass('d-none');
 
-                            // Masukkan data base64 ke hidden input untuk disubmit
                             $('#gambarAiBase64').val(response.image_base64);
 
-                            // Reset input file manual agar tidak double upload
                             $('#fileGambarManual').val('');
                             $('#placeholderIcon').hide();
                         } else {
@@ -160,7 +153,6 @@
             });
         });
 
-        // Handler Upload Manual (Preview saat user pilih file dari komputer)
         $('#fileGambarManual').change(function() {
             if (this.files && this.files[0]) {
                 var reader = new FileReader();
@@ -171,12 +163,10 @@
                 }
                 reader.readAsDataURL(this.files[0]);
 
-                // Reset hidden input AI agar yang dipakai adalah file manual
                 $('#gambarAiBase64').val('');
             }
         });
 
-        // Fungsi Load Data Tabel
         function load_data(hlm) {
             $.ajax({
                 url: "article_data.php",
@@ -190,7 +180,6 @@
             })
         }
 
-        // Handler Pagination
         $(document).on('click', '.halaman', function() {
             var hlm = $(this).attr("id");
             load_data(hlm);
@@ -201,7 +190,6 @@
 <?php
 include_once "upload_foto.php";
 
-// Logic Simpan Data
 if (isset($_POST['simpan'])) {
     $judul = $_POST['judul'];
     $isi = $_POST['isi'];
@@ -212,7 +200,6 @@ if (isset($_POST['simpan'])) {
     $nama_gambar_manual = $_FILES['gambar']['name'];
     $gambar_ai_base64 = $_POST['gambar_ai_base64'] ?? '';
 
-    // Prioritas 1: User upload file manual
     if ($nama_gambar_manual != '') {
         $cek_upload = upload_foto($_FILES["gambar"]);
         if ($cek_upload['status']) {
@@ -222,37 +209,29 @@ if (isset($_POST['simpan'])) {
             die;
         }
     }
-    // Prioritas 2: User pakai gambar AI
     elseif (!empty($gambar_ai_base64)) {
-        // Format Base64: "data:image/png;base64,....."
         $image_parts = explode(";base64,", $gambar_ai_base64);
 
         if (count($image_parts) === 2) {
-            // Ambil ekstensi dari header mime type (misal: image/png -> png)
             $image_type_aux = explode("image/", $image_parts[0]);
             $image_type = $image_type_aux[1];
 
             $image_base64 = base64_decode($image_parts[1]);
 
-            // Buat nama file unik: ai_timestamp_random.png
             $nama_file_ai = 'ai_' . time() . '_' . uniqid() . '.' . $image_type;
 
-            // Simpan file ke folder img/
             if (file_put_contents('img/' . $nama_file_ai, $image_base64)) {
                 $gambar = $nama_file_ai;
             }
         }
     }
 
-    // Cek apakah mode Edit (Update) atau Tambah (Insert)
     if (isset($_POST['id'])) {
         $id = $_POST['id'];
 
-        // Jika user tidak ganti gambar, pakai gambar lama
         if ($gambar == '') {
             $gambar = $_POST['gambar_lama'];
         } else {
-            // Jika ganti gambar, hapus gambar lama (opsional, biar hemat storage)
             if (file_exists("img/" . $_POST['gambar_lama']) && $_POST['gambar_lama'] != '') {
                 unlink("img/" . $_POST['gambar_lama']);
             }
@@ -262,7 +241,6 @@ if (isset($_POST['simpan'])) {
         $stmt->bind_param("sssssi", $judul, $isi, $gambar, $tanggal, $username, $id);
         $simpan = $stmt->execute();
     } else {
-        // Insert Baru
         $stmt = $conn->prepare("INSERT INTO article (judul,isi,gambar,tanggal,username) VALUES (?,?,?,?,?)");
         $stmt->bind_param("sssss", $judul, $isi, $gambar, $tanggal, $username);
         $simpan = $stmt->execute();
@@ -278,7 +256,6 @@ if (isset($_POST['simpan'])) {
     $conn->close();
 }
 
-// Logic Hapus Data
 if (isset($_POST['hapus'])) {
     $id = $_POST['id'];
     $gambar = $_POST['gambar'];

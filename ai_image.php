@@ -25,8 +25,6 @@ function translateToEnglish($text)
 
 function generateImageAI($prompt, $targetFormat = 'jpg')
 {
-    // 1. Definisi Format yang Diizinkan (Sesuai request dosen)
-    // Format array: 'ekstensi_user' => 'mime_type_output'
     $allowedFormats = [
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
@@ -34,8 +32,6 @@ function generateImageAI($prompt, $targetFormat = 'jpg')
         'gif'  => 'image/gif'
     ];
 
-    // 2. Validasi Format (Syarat Dosen)
-    // Jika format user tidak ada di kunci array $allowedFormats
     if (!array_key_exists(strtolower($targetFormat), $allowedFormats)) {
         return json_encode([
             "success" => false,
@@ -45,8 +41,6 @@ function generateImageAI($prompt, $targetFormat = 'jpg')
 
     $targetMime = $allowedFormats[strtolower($targetFormat)];
 
-    // 3. Request ke AI (Stable Diffusion XL)
-    // Kita tetap minta Stable Diffusion generate gambar (biasanya dia kasih JPEG)
     $hfToken = getenv('HF_TOKEN');
     $modelId = 'stabilityai/stable-diffusion-xl-base-1.0';
     $apiURL = "https://router.huggingface.co/hf-inference/models/$modelId";
@@ -74,30 +68,25 @@ function generateImageAI($prompt, $targetFormat = 'jpg')
     curl_close($ch);
 
     if ($httpCode == 200) {
-        // 4. Proses Konversi Gambar (Magic happens here)
-
-        // Baca string gambar dari API (apapun format aslinya)
         $image = imagecreatefromstring($result);
 
         if (!$image) {
             return json_encode(["success" => false, "error" => "Gagal memproses gambar dari AI."]);
         }
 
-        // Mulai buffer untuk menangkap hasil konversi
         ob_start();
 
-        // Konversi sesuai target format user
         switch (strtolower($targetFormat)) {
             case 'png':
-                imagepng($image); // Convert ke PNG
+                imagepng($image);
                 break;
             case 'gif':
-                imagegif($image); // Convert ke GIF
+                imagegif($image); 
                 break;
             case 'jpg':
             case 'jpeg':
             default:
-                imagejpeg($image, null, 90); // Convert ke JPG (Quality 90)
+                imagejpeg($image, null, 90); 
                 break;
         }
 
