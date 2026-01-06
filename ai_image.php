@@ -42,7 +42,7 @@ function generateImageAI($prompt, $targetFormat = 'jpg')
     $targetMime = $allowedFormats[strtolower($targetFormat)];
 
     $hfToken = getenv('HF_TOKEN');
-    $modelId = 'stabilityai/stable-diffusion-xl-base-1.0';
+    $modelId = 'black-forest-labs/FLUX.1-schnell';
     $apiURL = "https://router.huggingface.co/hf-inference/models/$modelId";
 
     $englishPrompt = translateToEnglish($prompt);
