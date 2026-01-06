@@ -97,7 +97,7 @@ function generateImageAI($prompt, $targetFormat = 'jpg')
             case 'jpg':
             case 'jpeg':
             default:
-                imagejpeg($image, 90); // Convert ke JPG (Quality 90)
+                imagejpeg($image, null, 90); // Convert ke JPG (Quality 90)
                 break;
         }
 
