@@ -23,90 +23,105 @@ function translateToEnglish($text)
     return $text;
 }
 
-function generateImageAI($prompt, $targetFormat = 'jpg')
+function generateImageAI($prompt, $targetFormat = 'webp')
 {
     $allowedFormats = [
+        'webp' => 'image/webp',
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'png'  => 'image/png',
         'gif'  => 'image/gif'
     ];
 
-    if (!array_key_exists(strtolower($targetFormat), $allowedFormats)) {
+    $targetFormat = strtolower($targetFormat);
+
+    if (!array_key_exists($targetFormat, $allowedFormats)) {
         return json_encode([
             "success" => false,
-            "error" => "Format gambar tidak didukung. Gunakan JPG, PNG, atau GIF."
+            "error" => "Format '$targetFormat' tidak didukung. Gunakan WEBP, JPG, atau PNG."
         ]);
     }
 
-    $targetMime = $allowedFormats[strtolower($targetFormat)];
+    $targetMime = $allowedFormats[$targetFormat];
 
-    $hfToken = getenv('HF_TOKEN');
+    $hfToken = getenv('HF_TOKEN') ?: 'hf_MASUKKAN_TOKEN_ANDA_DISINI';
+
     $modelId = 'black-forest-labs/FLUX.1-schnell';
     $apiURL = "https://router.huggingface.co/hf-inference/models/$modelId";
 
     $englishPrompt = translateToEnglish($prompt);
-    $enhancedPrompt = "Ultra-realistic Unreal Engine 5 cinematic render of {$englishPrompt}, 8k resolution, photorealistic.";
-
-    $headers = [
-        "Authorization: Bearer $hfToken",
-        "Content-Type: application/json"
-    ];
+    $enhancedPrompt = "A professional, high-quality cinematic photo of: {$englishPrompt}. Photorealistic, 8k, highly detailed.";
 
     $data = ["inputs" => $enhancedPrompt];
 
     $ch = curl_init($apiURL);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer $hfToken",
+        "Content-Type: application/json"
+    ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $result = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
 
+    if ($curlError) {
+        return json_encode(["success" => false, "error" => "Koneksi gagal: $curlError"]);
+    }
+
     if ($httpCode == 200) {
-        $image = imagecreatefromstring($result);
+        $image = @imagecreatefromstring($result);
 
         if (!$image) {
-            return json_encode(["success" => false, "error" => "Gagal memproses gambar dari AI."]);
+            return json_encode(["success" => false, "error" => "Data dari AI bukan gambar valid."]);
         }
 
         ob_start();
-
-        switch (strtolower($targetFormat)) {
+        switch ($targetFormat) {
+            case 'webp':
+                if (function_exists('imagewebp')) {
+                    imagewebp($image, null, 80);
+                } else {
+                    imagejpeg($image, null, 90); 
+                }
+                break;
             case 'png':
                 imagepng($image);
                 break;
             case 'gif':
-                imagegif($image); 
+                imagegif($image);
                 break;
             case 'jpg':
             case 'jpeg':
             default:
-                imagejpeg($image, null, 90); 
+                imagejpeg($image, null, 90);
                 break;
         }
-
         $imageData = ob_get_contents();
         ob_end_clean();
         imagedestroy($image);
 
-        // 5. Kirim Hasil
         $base64Image = base64_encode($imageData);
         return json_encode([
             "success" => true,
-            "format_request" => $targetFormat,
+            "format_used" => $targetFormat,
             "image_base64" => "data:$targetMime;base64,$base64Image"
         ]);
     } else {
         $errorResp = json_decode($result, true);
-        $pesanError = $errorResp['error'] ?? "Gagal (HTTP $httpCode).";
-        if (strpos($pesanError, 'loading') !== false) {
-            $pesanError = "Model sedang 'Warming Up'. Tunggu 30 detik.";
+        $pesanError = $errorResp['error'] ?? "Gagal menghubungi AI (HTTP $httpCode).";
+
+        if (strpos(strtolower($pesanError), 'loading') !== false) {
+            $pesanError = "Model sedang 'Warming Up'. Tunggu sekitar 30 detik lalu coba lagi.";
         }
+
         return json_encode(["success" => false, "error" => $pesanError]);
     }
 }

@@ -13,7 +13,6 @@ if ($action == 'generate_image') {
 
         $prompt = substr($isiArtikel, 0, 300);
 
-        // Panggil fungsi dengan parameter format
         echo generateImageAI($prompt, $format);
     } else {
         echo json_encode(["success" => false, "error" => "Isi artikel tidak dikirim"]);

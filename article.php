@@ -38,7 +38,8 @@
                                                     <i class="bi bi-file-earmark-image me-1"></i>Format Output AI
                                                 </label>
                                                 <select class="form-select form-select-sm border-0 shadow-sm" id="formatGambar">
-                                                    <option value="jpg" selected>JPG (Default - Ringan)</option>
+                                                    <option value="webp" selected>WebP (Terbaik - Ukuran Kecil)</option>
+                                                    <option value="jpg">JPG (Standar)</option>
                                                     <option value="png">PNG (Kualitas Tinggi)</option>
                                                     <option value="gif">GIF (Animasi/Standar)</option>
                                                 </select>
@@ -119,7 +120,7 @@
                 data: {
                     action: actionType,
                     isi: isi,
-                    format: format 
+                    format: format
                 },
                 success: function(response) {
                     $('#loadingText').remove();
@@ -208,8 +209,7 @@ if (isset($_POST['simpan'])) {
             echo "<script>alert('" . $cek_upload['message'] . "'); document.location='admin.php?page=article';</script>";
             die;
         }
-    }
-    elseif (!empty($gambar_ai_base64)) {
+    } elseif (!empty($gambar_ai_base64)) {
         $image_parts = explode(";base64,", $gambar_ai_base64);
 
         if (count($image_parts) === 2) {
