@@ -1,10 +1,37 @@
 <?php
 include_once "koneksi.php";
 
+function loadEnv($path)
+{
+    if (!file_exists($path)) {
+        return false;
+    }
+
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+
+        if (strpos($line, '=') !== false) {
+            list($name, $value) = explode('=', $line, 2);
+            $name = trim($name);
+            $value = trim($value);
+
+            $value = trim($value, '"\'');
+
+            putenv(sprintf('%s=%s', $name, $value));
+            $_ENV[$name] = $value;
+            $_SERVER[$name] = $value;
+        }
+    }
+}
+
+loadEnv(__DIR__ . '/.env');
+
 function translateToEnglish($text)
 {
     $text = substr($text, 0, 1000);
-
     $url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=" . urlencode($text);
 
     $ch = curl_init();
@@ -44,7 +71,14 @@ function generateImageAI($prompt, $targetFormat = 'webp')
 
     $targetMime = $allowedFormats[$targetFormat];
 
-    $hfToken = getenv('HF_TOKEN') ?: 'hf_MASUKKAN_TOKEN_ANDA_DISINI';
+    $hfToken = getenv('HF_TOKEN') ?: ($_ENV['HF_TOKEN'] ?? ($_SERVER['HF_TOKEN'] ?? ''));
+
+    if (empty($hfToken)) {
+        return json_encode([
+            "success" => false,
+            "error" => "Konfigurasi HF_TOKEN tidak ditemukan di .env atau environment server."
+        ]);
+    }
 
     $modelId = 'black-forest-labs/FLUX.1-schnell';
     $apiURL = "https://router.huggingface.co/hf-inference/models/$modelId";
@@ -89,7 +123,7 @@ function generateImageAI($prompt, $targetFormat = 'webp')
                 if (function_exists('imagewebp')) {
                     imagewebp($image, null, 80);
                 } else {
-                    imagejpeg($image, null, 90); 
+                    imagejpeg($image, null, 90);
                 }
                 break;
             case 'png':

@@ -1,5 +1,5 @@
 <div class="container">
-    <button type="button" class="btn btn-secondary mb-2" data-bs-toggle="modal" data-bs-target="#modalTambah">
+    <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#modalTambah">
         <i class="bi bi-plus-lg"></i> Tambah Article
     </button>
 
@@ -9,15 +9,14 @@
 
         <div class="modal fade" id="modalTambah" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Article</h1>
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-light">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Kelola Article</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <form method="post" action="" enctype="multipart/form-data">
                         <div class="modal-body pt-3 px-4 pb-4">
-
                             <div class="mb-4 position-relative">
                                 <input type="text" class="form-control form-control-lg border-0 border-bottom rounded-0 fw-bold fs-3 text-dark ps-0"
                                     name="judul" id="judul" placeholder="Tulis Judul di sini..." style="box-shadow: none;" required>
@@ -32,22 +31,11 @@
                                 <div class="col-md-4">
                                     <div class="card border-0 bg-light rounded-4 h-100">
                                         <div class="card-body p-3 d-flex flex-column">
+                                            <label class="form-label fw-bold small text-muted text-uppercase mb-2">
+                                                <i class="bi bi-image me-1"></i> Visual
+                                            </label>
 
-                                            <div class="mb-3">
-                                                <label for="formatGambar" class="form-label fw-bold small text-muted text-uppercase mb-1">
-                                                    <i class="bi bi-file-earmark-image me-1"></i>Format Output AI
-                                                </label>
-                                                <select class="form-select form-select-sm border-0 shadow-sm" id="formatGambar">
-                                                    <option value="webp" selected>WebP (Terbaik - Ukuran Kecil)</option>
-                                                    <option value="jpg">JPG (Standar)</option>
-                                                    <option value="png">PNG (Kualitas Tinggi)</option>
-                                                    <option value="gif">GIF (Animasi/Standar)</option>
-                                                </select>
-                                            </div>
-
-                                            <label class="form-label fw-bold small text-muted text-uppercase mb-2">Visual</label>
-
-                                            <div id="aiImagePreviewContainer" class="flex-grow-1 rounded-3 bg-white border border-dashed d-flex align-items-center justify-content-center overflow-hidden position-relative mb-3" style="min-height: 140px;">
+                                            <div id="aiImagePreviewContainer" class="flex-grow-1 rounded-3 bg-white border d-flex align-items-center justify-content-center overflow-hidden position-relative mb-3" style="min-height: 160px; border: 2px dashed #dee2e6 !important;">
                                                 <div class="text-center text-muted opacity-50" id="placeholderIcon">
                                                     <i class="bi bi-card-image fs-1"></i>
                                                     <div style="font-size: 0.7rem;">Preview</div>
@@ -55,23 +43,40 @@
                                                 <img src="" id="aiImagePreview" class="img-fluid w-100 h-100 object-fit-cover d-none position-absolute" alt="Preview">
                                             </div>
 
-                                            <div class="d-grid gap-2">
-                                                <button type="button" class="btn btn-dark btn-sm rounded-3 btn-ai-action" data-action="generate_image">
+                                            <div class="d-grid gap-2 mb-3">
+                                                <button type="button" class="btn btn-dark btn-sm rounded-3 btn-ai-action shadow-sm" data-action="generate_image">
                                                     <i class="bi bi-stars text-warning me-1"></i> Generate Image
                                                 </button>
 
-                                                <div class="position-relative">
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 w-100" onclick="document.getElementById('fileGambarManual').click()">
-                                                        <i class="bi bi-upload me-1"></i> Upload Manual
-                                                    </button>
-                                                    <input type="file" class="d-none" name="gambar" id="fileGambarManual">
+                                                <div class="bg-white p-2 rounded-3 border shadow-sm">
+                                                    <label for="formatGambar" class="form-label fw-bold text-muted mb-1" style="font-size: 0.65rem;">
+                                                        <i class="bi bi-gear-fill me-1"></i> FORMAT OUTPUT AI
+                                                    </label>
+                                                    <select class="form-select form-select-sm border-0 bg-light" id="formatGambar" style="font-size: 0.75rem;">
+                                                        <option value="webp" selected>WebP (Kecil & Cepat)</option>
+                                                        <option value="jpg">JPG (Standar)</option>
+                                                        <option value="png">PNG (Kualitas Tinggi)</option>
+                                                        <option value="gif">GIF (Standar)</option>
+                                                    </select>
                                                 </div>
                                             </div>
 
-                                            <input type="hidden" name="gambar_ai_base64" id="gambarAiBase64">
+                                            <div class="hr-text text-muted mb-3" style="display: flex; align-items: center; font-size: 0.65rem;">
+                                                <div style="flex: 1; height: 1px; background: #dee2e6;"></div>
+                                                <div style="padding: 0 10px;">ATAU</div>
+                                                <div style="flex: 1; height: 1px; background: #dee2e6;"></div>
+                                            </div>
 
-                                            <div class="mt-2 text-center">
-                                                <small class="text-muted" style="font-size: 0.65rem;">*Pilih salah satu metode</small>
+                                            <div class="d-grid mb-2">
+                                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 w-100 shadow-sm" onclick="document.getElementById('fileGambarManual').click()">
+                                                    <i class="bi bi-upload me-1"></i> Upload Manual
+                                                </button>
+                                                <input type="file" class="d-none" name="gambar" id="fileGambarManual">
+                                            </div>
+
+                                            <input type="hidden" name="gambar_ai_base64" id="gambarAiBase64">
+                                            <div class="text-center">
+                                                <small class="text-muted" style="font-size: 0.6rem;">*Gunakan salah satu metode di atas</small>
                                             </div>
                                         </div>
                                     </div>
@@ -79,9 +84,9 @@
                             </div>
                         </div>
 
-                        <div class="modal-footer border-top-0 px-4 pb-4">
+                        <div class="modal-footer border-top-0 px-4 pb-4 bg-light rounded-bottom-4">
                             <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" name="simpan" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan</button>
+                            <button type="submit" name="simpan" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan Artikel</button>
                         </div>
                     </form>
                 </div>
