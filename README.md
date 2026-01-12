@@ -61,7 +61,6 @@ Fitur ini memungkinkan admin menghasilkan gambar ilustrasi secara otomatis berda
 
 ## 🔁 Alur Generate Gambar (Flow)
 
-```mermaid
 flowchart TD
 A[Admin tulis artikel] --> B[Ambil 300 karakter awal / isi konten]
 B --> C[Translate ID -> EN]
