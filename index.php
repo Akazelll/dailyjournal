@@ -282,7 +282,7 @@ include "koneksi.php";
             <div
               class="card-body d-flex flex-column justify-content-center py-5">
               <p class="card-text mb-0">
-                <strong>08.30 - 11.00:</strong><br />Web Dev Laravel Doscom University
+                Tidak ada jadwal kuliah atau kegiatan
               </p>
             </div>
           </div>
@@ -366,7 +366,7 @@ include "koneksi.php";
       <a href="https://instagram.com/adamxraga" target="_blank"><i class="bi bi-instagram h3 p-2 text-dark"></i></a>
       <a href="https://www.linkedin.com/in/adamxraga/" target="_blank"><i class="bi bi-linkedin h3 p-2 text-dark"></i></a>
     </div>
-    <p class="">&copy; 2025 My Daily Journal - Adam Raga</p>
+    <p class="">&copy; 2026 My Daily Journal - Kelompok 5</p>
   </footer>
 </body>
 <script

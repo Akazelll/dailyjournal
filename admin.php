@@ -77,7 +77,7 @@ if (!isset($_SESSION['username'])) {
             <a href="https://instagram.com/adamxraga" target="_blank"><i class="bi bi-instagram h3 p-2 text-dark"></i></a>
             <a href="https://www.linkedin.com/in/adamxraga/" target="_blank"><i class="bi bi-linkedin h3 p-2 text-dark"></i></a>
         </div>
-        <p class="">&copy; 2025 My Daily Journal - Adam Raga</p>
+        <p class="">&copy; 2026 My Daily Journal - Kelompok 5</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
