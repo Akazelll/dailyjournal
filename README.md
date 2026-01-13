@@ -1,6 +1,6 @@
 # 📝 Web Daily Journal — AI Image Generator (FLUX.1 Schnell)
 
-Aplikasi **Web Daily Journal** berbasis **PHP Native** yang memungkinkan admin membuat artikel + **menghasilkan ilustrasi gambar otomatis** menggunakan **Generative AI**.  
+Aplikasi **Web Daily Journal** berbasis **PHP Native** yang memungkinkan admin membuat artikel sekaligus **menghasilkan ilustrasi gambar otomatis** menggunakan **Generative AI**.  
 Proyek ini dibuat untuk memenuhi tugas **Proyek Akhir / UAS Mata Kuliah Pemrograman Berbasis Web**.
 
 ---
@@ -10,8 +10,8 @@ Proyek ini dibuat untuk memenuhi tugas **Proyek Akhir / UAS Mata Kuliah Pemrogra
 - ✅ Model **black-forest-labs/FLUX.1-schnell** via **Hugging Face Inference API**
 - ✅ Output **Multi-Format**: **WebP / JPG / PNG / GIF**
 - ✅ **Prompt engineering otomatis** (translate → enrich → generate)
-- ✅ **AJAX async** (tidak ganggu alur nulis artikel)
-- ✅ Simpan gambar AI ke **server lokal** (`img/`)
+- ✅ **AJAX async** (tidak mengganggu alur penulisan)
+- ✅ Gambar tersimpan ke **server lokal** (`img/`)
 
 ---
 
@@ -28,18 +28,18 @@ Proyek ini dibuat untuk memenuhi tugas **Proyek Akhir / UAS Mata Kuliah Pemrogra
 
 ## 🤖 Fitur Utama: Auto Generate Image (Opsi 5)
 
-Fitur ini memungkinkan admin menghasilkan gambar ilustrasi secara otomatis berdasarkan isi konten artikel. Cocok buat penulis yang ingin visual instan tanpa cari gambar manual.
+Fitur ini memungkinkan administrator menghasilkan gambar ilustrasi otomatis berdasarkan isi konten artikel. Cocok untuk membantu penulis memvisualisasikan cerita secara instan tanpa mencari gambar manual.
 
 ### Keunggulan
 - **Model AI Mutakhir**  
   Menggunakan `black-forest-labs/FLUX.1-schnell` (fotorealistik, latensi rendah).
 - **Multi-Format Output**  
-  Admin bisa pilih output: WebP/JPG/PNG/GIF.
+  Admin dapat memilih format file hasil AI: WebP/JPG/PNG/GIF.
 - **Prompt Engineering Otomatis**  
   Konten diterjemahkan ke English lalu diperkaya parameter visual seperti:  
   `photorealistic`, `8k`, `cinematic lighting`, `sharp focus`, dll.
 - **AJAX Async Generation**  
-  Generate berjalan asinkron sehingga UI tetap responsif.
+  Proses generate berjalan asinkron sehingga UI tetap responsif.
 
 ---
 
@@ -53,9 +53,9 @@ Fitur ini memungkinkan admin menghasilkan gambar ilustrasi secara otomatis berda
   - **Google Translate API** (preprocessing prompt Bahasa Indonesia → English)
 
 ### Library / Komponen Teknis
-- **cURL**: request ke API eksternal
-- **PHP GD Library**: decode stream gambar + konversi format
-- **Custom Env Loader**: load `.env` tanpa dependensi tambahan
+- **cURL:** request ke API eksternal
+- **PHP GD Library:** decode stream gambar + konversi format
+- **Custom Env Loader:** load `.env` tanpa dependensi tambahan
 
 ---
 
@@ -71,6 +71,9 @@ flowchart TD
   F --> G["Konversi format via PHP GD: webp / jpg / png / gif"]
   G --> H["Simpan lokal ke folder img/"]
   H --> I["Preview ditampilkan ke admin"]
+````
+
+---
 
 ## 📦 Instalasi & Konfigurasi
 
@@ -85,7 +88,7 @@ cd dailyjournal
 
 1. Buat database (contoh: `latihan_pbw`)
 2. Import file SQL (jika tersedia) / jalankan struktur tabel dari repo
-3. Sesuaikan koneksi pada `koneksi.php`
+3. Sesuaikan konfigurasi pada `koneksi.php`
 
 > Pastikan credential DB benar dan database server aktif.
 
@@ -104,8 +107,7 @@ HF_TOKEN=your_huggingface_token_here
 GOOGLE_TRANSLATE_KEY=your_key_here
 ```
 
-> **Cara ambil HF Token:**
-> Hugging Face → Settings → Access Tokens → Generate token → copy.
+> Cara ambil HF Token: Hugging Face → Settings → Access Tokens → Generate token → copy.
 
 ### 4) Izin Folder (Wajib)
 
@@ -122,8 +124,8 @@ chmod -R 775 img
 
 ## ▶️ Cara Menjalankan
 
-* Jalankan via XAMPP/Laragon (Apache + MySQL)
-* Akses project dari browser (contoh):
+* Jalankan via **XAMPP/Laragon** (Apache + MySQL)
+* Akses melalui browser:
 
   * `http://localhost/dailyjournal/`
 
@@ -161,7 +163,7 @@ chmod -R 775 img
 
 ## 💡 Tips Biar Hasil AI Lebih Akurat
 
-* Fokus pada **300 karakter awal** konten artikel: buat sejelas mungkin (siapa, apa, tempat, suasana, objek)
+* Fokus pada **300 karakter awal** konten artikel (buat deskriptif: objek, tempat, suasana)
 * Tambahkan detail visual: waktu (pagi/malam), lokasi (pantai/kota/hutan), mood (dramatic/calm)
 * **WebP** direkomendasikan karena lebih ringan untuk web
 
@@ -185,8 +187,8 @@ Konversi dilakukan di server menggunakan **PHP GD Library**.
 Beberapa kondisi yang ditangani:
 
 * Token HF kosong / invalid → tampilkan pesan error
-* Response API gagal / timeout → fallback pesan & retry manual
-* Format tidak valid → default ke format aman (misal PNG)
+* Response API gagal / timeout → tampilkan pesan & user bisa generate ulang
+* Format tidak valid → fallback ke format aman (misal PNG)
 * Folder `img/` tidak writable → tampilkan error permission
 
 ---
@@ -195,7 +197,7 @@ Beberapa kondisi yang ditangani:
 
 * Jangan commit file `.env` ke GitHub
 * Jangan hardcode token API di file PHP
-* Default admin credential hanya untuk kebutuhan demo tugas, **wajib diganti** jika dipakai publik
+* Default admin credential hanya untuk demo tugas, **wajib diganti** jika dipakai publik
 
 ---
 
@@ -203,7 +205,7 @@ Beberapa kondisi yang ditangani:
 
 > Struktur bisa menyesuaikan isi repo, ini contoh umum:
 
-```
+```text
 dailyjournal/
 ├─ img/                  # output gambar AI tersimpan
 ├─ assets/               # css/js/img static (jika ada)
@@ -231,7 +233,6 @@ dailyjournal/
 
 ## 📌 Repo
 
-Link repository:
 [https://github.com/Akazelll/dailyjournal](https://github.com/Akazelll/dailyjournal)
 
 ---
@@ -239,7 +240,7 @@ Link repository:
 ## 📄 Lisensi
 
 Proyek ini dibuat untuk kebutuhan akademik (UAS).
-Jika ingin dipublikasikan atau dipakai lanjut, silakan tambahkan lisensi sesuai kebutuhan (MIT/Apache-2.0/dll).
+Jika ingin dipublikasikan/lanjut dikembangkan, tambahkan lisensi sesuai kebutuhan (MIT/Apache-2.0/dll).
 
 ---
 
@@ -248,3 +249,7 @@ Jika ingin dipublikasikan atau dipakai lanjut, silakan tambahkan lisensi sesuai 
 * Hugging Face Inference API
 * FLUX.1 Schnell — Black Forest Labs
 * Bootstrap & jQuery
+
+````
+
+````
