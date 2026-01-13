@@ -63,14 +63,15 @@ Fitur ini memungkinkan admin menghasilkan gambar ilustrasi secara otomatis berda
 
 ```mermaid
 flowchart TD
-  A[Admin tulis artikel] --> B[Ambil 300 karakter awal / isi konten]
-  B --> C[Translate ID → EN]
-  C --> D[Prompt Enrichment<br/>photorealistic • 8k • cinematic lighting]
-  D --> E[Request ke Hugging Face Inference API<br/>(FLUX.1 Schnell)]
-  E --> F[Terima image binary stream]
-  F --> G[Konversi format (PHP GD)<br/>webp / jpg / png / gif]
-  G --> H[Simpan lokal ke folder img/]
-  H --> I[Preview ditampilkan ke admin]
+  A["Admin tulis artikel"] --> B["Ambil 300 karakter awal / isi konten"]
+  B --> C["Translate ID ke EN"]
+  C --> D["Prompt enrichment: photorealistic, 8k, cinematic lighting"]
+  D --> E["Request ke Hugging Face Inference API - FLUX 1 Schnell"]
+  E --> F["Terima image binary stream"]
+  F --> G["Konversi format via PHP GD: webp / jpg / png / gif"]
+  G --> H["Simpan lokal ke folder img/"]
+  H --> I["Preview ditampilkan ke admin"]
+
 
 
 ---
