@@ -72,10 +72,6 @@ flowchart TD
   G --> H["Simpan lokal ke folder img/"]
   H --> I["Preview ditampilkan ke admin"]
 
-
-
-
-
 ## 📦 Instalasi & Konfigurasi
 
 ### 1) Clone Repository
